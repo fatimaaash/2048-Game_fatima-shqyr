@@ -4,9 +4,15 @@
     <meta charset="utf-8" />
     <title>Fatima - 2048 Game</title>
     <link rel="stylesheet" href="style.css" />
+    
+    <!-- مكتبة الرسم البياني -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- سكربت اللعبة -->
     <script src="script.js" charset="utf-8" defer></script>
+
     <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg" />
+
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -14,27 +20,32 @@
         text-align: center;
         padding: 40px;
       }
+
       .container {
         display: inline-block;
         background: #bbada0;
         padding: 20px;
         border-radius: 10px;
       }
+
       .info {
         margin-bottom: 10px;
       }
+
       .score-container {
         background: #eee4da;
         padding: 10px;
         border-radius: 5px;
         font-size: 20px;
       }
+
       .grid {
         display: grid;
         grid-template-columns: repeat(4, 100px);
         grid-gap: 5px;
         margin-top: 10px;
       }
+
       .grid div {
         width: 100px;
         height: 100px;
@@ -45,6 +56,7 @@
         color: #776e65;
         border-radius: 3px;
       }
+
       #result {
         margin-top: 15px;
         font-size: 18px;
@@ -53,6 +65,7 @@
       }
     </style>
   </head>
+
   <body>
     <div class="container">
       <div class="info">
@@ -62,8 +75,12 @@
           <span id="score">0</span>
         </div>
       </div>
+
       <span id="result">جمعي الأرقام حتى توصلي للبلاطة <b>2048</b> 🎯</span>
+
       <div class="grid"></div>
+
+      <!-- المكان اللي بيرسم فيه الرسم البياني -->
       <canvas id="moveChart" width="400" height="200"></canvas>
     </div>
   </body>
