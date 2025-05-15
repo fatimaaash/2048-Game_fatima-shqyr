@@ -223,7 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
       acc[move] = (acc[move] || 0) + 1;
       return acc;
     }, {});
-    console.log("\nالحركات المتوفرة:\n", counts);
 
     let summary = {
       maxScore: score,
@@ -231,7 +230,48 @@ document.addEventListener("DOMContentLoaded", () => {
       uniqueMoves: Object.keys(counts).length,
     };
     console.log("\nالإحصائيات:\n", summary);
+
     downloadCSV();
+
+    if (moveLog.length > 0) {
+      const ctx = document.getElementById("moveChart").getContext("2d");
+
+      const moveData = {
+        labels: ["Left", "Right", "Up", "Down"],
+        datasets: [{
+          label: "عدد الحركات",
+          data: [
+            moveLog.filter((m) => m === "Left").length,
+            moveLog.filter((m) => m === "Right").length,
+            moveLog.filter((m) => m === "Up").length,
+            moveLog.filter((m) => m === "Down").length
+          ],
+          backgroundColor: ["#f39c12", "#2980b9", "#27ae60", "#c0392b"]
+        }]
+      };
+
+      new Chart(ctx, {
+        type: "bar",
+        data: moveData,
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "🎮 تحليل الحركات خلال الجلسة"
+            },
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
   }
 
   function downloadCSV() {
@@ -247,42 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(link);
     link.click();
   }
-const ctx = document.getElementById("moveChart").getContext("2d");
-const moveData = {
-  labels: ["Left", "Right", "Up", "Down"],
-  datasets: [{
-    label: "عدد الحركات",
-    data: [
-      moveLog.filter((m) => m === "Left").length,
-      moveLog.filter((m) => m === "Right").length,
-      moveLog.filter((m) => m === "Up").length,
-      moveLog.filter((m) => m === "Down").length
-    ],
-    backgroundColor: ["#f39c12", "#2980b9", "#27ae60", "#c0392b"]
-  }]
-};
-
-new Chart(ctx, {
-  type: "bar",
-  data: moveData,
-  options: {
-    responsive: true,
-    plugins: {
-      title: {
-        display: true,
-        text: "تحليل الحركات خلال الجلسة 🎮"
-      },
-      legend: {
-        display: false
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  }
-});
 
   function clear() {
     clearInterval(myTimer);
@@ -308,6 +312,7 @@ new Chart(ctx, {
       squares[i].style.backgroundColor = colors[val] || "#ffffff";
     }
   }
+
   addColours();
   var myTimer = setInterval(addColours, 50);
 });
