@@ -38,3 +38,8 @@ y_pred = model.predict(X_test)
 print("🎯 تقرير التصنيف:")
 print(classification_report(y_test, y_pred))
 print("✅ دقة النموذج:", accuracy_score(y_test, y_pred))
+import joblib
+
+# حفظ النموذج في ملف
+joblib.dump(model, "near_loss_model.pkl")
+print("✅ النموذج تم حفظه!")
