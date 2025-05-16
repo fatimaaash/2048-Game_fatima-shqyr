@@ -77,13 +77,21 @@ function getMaxTile() {
   })
   .then(res => res.json())
   .then(data => {
-    if (data.prediction === 1) {
-      const warningBox = document.getElementById("warningBox");
-      warningBox.style.display = "block";
-      setTimeout(() => {
-        warningBox.style.display = "none";
-      }, 3000);
-    }
+    // نحدد مستوى الخطر: إذا النموذج توقع خسارة = 100 (خطر عالي)، وإلا 20
+const riskLevel = data.prediction === 1 ? 90 : 20;
+
+// نرسم العداد بناءً على مستوى الخطر
+drawDangerGauge(riskLevel);
+
+// نعرض تحذير فقط إذا كان عالي
+if (data.prediction === 1) {
+  const warningBox = document.getElementById("warningBox");
+  warningBox.style.display = "block";
+  setTimeout(() => {
+    warningBox.style.display = "none";
+  }, 3000);
+}
+
   })
   .catch(err => {
     console.error("خطأ في الاتصال بالنموذج:", err);
@@ -291,6 +299,41 @@ const toggleSoundBtn = document.getElementById("toggleSound");
 const restartBtn = document.getElementById("restartBtn");
 
 let soundOn = false;
+let dangerChart; // متغير عالمي
+
+function drawDangerGauge(level) {
+  const ctx = document.getElementById("dangerGauge").getContext("2d");
+
+  if (dangerChart) {
+    dangerChart.destroy(); // نحذف القديم قبل نرسم جديد
+  }
+
+  const data = {
+    labels: ["الخطر"],
+    datasets: [{
+      data: [level, 100 - level],
+      backgroundColor: level >= 70 ? ["#e74c3c", "#ddd"] :
+                       level >= 40 ? ["#f1c40f", "#ddd"] :
+                                     ["#2ecc71", "#ddd"],
+      borderWidth: 0
+    }]
+  };
+
+  dangerChart = new Chart(ctx, {
+    type: "doughnut",
+    data: data,
+    options: {
+      circumference: 180,
+      rotation: -90,
+      cutout: "70%",
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      }
+    }
+  });
+}
+
 
 toggleSoundBtn.addEventListener("click", () => {
   soundOn = !soundOn;
