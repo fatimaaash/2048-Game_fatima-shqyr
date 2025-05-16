@@ -31,10 +31,37 @@
       <span id="result"></span>
     </div>
     <div class="grid"></div>
-    <canvas id="moveChart" width="400" height="200"></canvas>
     <button id="restartBtn" style="display:none; margin-top:15px;">إعادة تشغيل اللعبة 🔄</button>
   </div>
 
+  <!-- 🎯 لوحة التحكم -->
+  <h2 style="text-align:center; margin-top: 40px;">لوحة تحكم تحليلات اللاعب 🎮</h2>
+
+  <div id="dashboard" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-top: 20px;">
+    <!-- رسم تحليل الحركات -->
+     <div>
+  <h4 style="text-align:center;">⏱️ تحليل الزمن بين الحركات</h4>
+  <canvas id="moveTimeChart" width="400" height="300"></canvas>
+</div>
+<div>
+  <h4 style="text-align:center;">📈 أعلى بلاطة وصلت لها خلال الجلسة</h4>
+  <canvas id="maxTileChart" width="400" height="300"></canvas>
+</div>
+
+
+    <div>
+      <h4 style="text-align:center;">تحليل اتجاهات الحركة</h4>
+      <canvas id="moveChart" width="400" height="300"></canvas>
+    </div>
+
+    <!-- رسم نسبة الفوز والخسارة -->
+    <div>
+      <h4 style="text-align:center;">نسبة الفوز والخسارة</h4>
+      <canvas id="winLossChart" width="400" height="300"></canvas>
+    </div>
+  </div>
+
+  <!-- صوت خلفية -->
   <audio id="bgMusic" loop>
     <source src="C:\Users\USER\Desktop\21-2048-Game\609440__andrecani__gaming-acoustic-music-by-andre.wav" type="audio/mpeg" />
   </audio>
@@ -47,6 +74,3 @@
 
   <script src="script.js"></script>
 </body>
-
-</html>
-<!-- python app.py-->
