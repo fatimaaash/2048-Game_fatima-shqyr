@@ -228,3 +228,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   createBoard();
 });
+const bgMusic = document.getElementById("bgMusic");
+const toggleSoundBtn = document.getElementById("toggleSound");
+const restartBtn = document.getElementById("restartBtn");
+
+let soundOn = false;
+
+toggleSoundBtn.addEventListener("click", () => {
+  soundOn = !soundOn;
+  if (soundOn) {
+    bgMusic.play();
+    toggleSoundBtn.textContent = "إيقاف الصوت 🔇";
+  } else {
+    bgMusic.pause();
+    toggleSoundBtn.textContent = "تشغيل الصوت 🔈";
+  }
+});
+
+// إظهار زر إعادة التشغيل لما تنتهي اللعبة
+function showRestartButton() {
+  restartBtn.style.display = "inline-block";
+}
+
+// إعادة تعيين اللعبة
+restartBtn.addEventListener("click", () => {
+  // إعادة تحميل الصفحة أو إعادة تهيئة اللعبة
+  location.reload();
+});
+
+// في checkForWin() و checkForGameOver() أضف هذا السطر قبل setTimeout(clear, 3000);
+
+showRestartButton();
