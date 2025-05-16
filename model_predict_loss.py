@@ -1,4 +1,7 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.tree import plot_tree
+
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
@@ -19,6 +22,15 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # تدريب النموذج
 model = DecisionTreeClassifier(max_depth=4, random_state=42)
 model.fit(X_train, y_train)
+# رسم شجرة القرار
+plt.figure(figsize=(16, 8))
+plot_tree(model, 
+          feature_names=['Score', 'MaxTile', 'MoveTime(ms)', 'EmptyTiles'], 
+          class_names=['Not Near Loss', 'Near Loss'],
+          filled=True)
+plt.title("Decision Tree - Near Loss Prediction")
+plt.show()
+
 
 # التنبؤ والنتائج
 y_pred = model.predict(X_test)
