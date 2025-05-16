@@ -1,87 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Fatima - 2048 Game</title>
-    <link rel="stylesheet" href="style.css" />
-    
-    <!-- مكتبة الرسم البياني -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <!-- سكربت اللعبة -->
-    <script src="script.js" charset="utf-8" defer></script>
-
-    <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg" />
-
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #faf8ef;
-        text-align: center;
-        padding: 40px;
-      }
-
-      .container {
-        display: inline-block;
-        background: #bbada0;
-        padding: 20px;
-        border-radius: 10px;
-      }
-
-      .info {
-        margin-bottom: 10px;
-      }
-
-      .score-container {
-        background: #eee4da;
-        padding: 10px;
-        border-radius: 5px;
-        font-size: 20px;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(4, 100px);
-        grid-gap: 5px;
-        margin-top: 10px;
-      }
-
-      .grid div {
-        width: 100px;
-        height: 100px;
-        background: #cdc1b4;
-        font-size: 24px;
-        font-weight: bold;
-        line-height: 100px;
-        color: #776e65;
-        border-radius: 3px;
-      }
-
-      #result {
-        margin-top: 15px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #333;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="container">
-      <div class="info">
-        <h1>لعبة 2048 ✨ - Fatima</h1>
-        <div class="score-container">
-          <div class="score-title">Score</div>
-          <span id="score">0</span>
-        </div>
-      </div>
-
-      <span id="result">جمعي الأرقام حتى توصلي للبلاطة <b>2048</b> 🎯</span>
-
-      <div class="grid"></div>
-
-      <!-- المكان اللي بيرسم فيه الرسم البياني -->
-      <canvas id="moveChart" width="400" height="200"></canvas>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>2048 - Fatima 👑</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>لعبة 2048 👑</h1>
+    <div class="score-board">
+      <span>النقاط: <span id="score">0</span></span>
+      <span id="result"></span>
     </div>
-  </body>
+    <div class="grid"></div>
+    <canvas id="moveChart" width="400" height="200"></canvas>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>
