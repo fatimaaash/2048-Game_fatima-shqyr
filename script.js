@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let moveLog = [];
   let gameAnalyticsLog = [];
   let lastMoveTime = Date.now();
+  let dangerChart;
 
   function createBoard() {
     for (let i = 0; i < width * width; i++) {
@@ -29,6 +30,15 @@ document.addEventListener("DOMContentLoaded", () => {
     checkForGameOver();
   }
 
+  function getMaxTile() {
+    let max = 0;
+    for (let sq of squares) {
+      let val = parseInt(sq.innerHTML);
+      if (val > max) max = val;
+    }
+    return max;
+  }
+
   function move(direction) {
     moveCount++;
     moveLog.push(direction);
@@ -38,72 +48,108 @@ document.addEventListener("DOMContentLoaded", () => {
     lastMoveTime = now;
 
     const emptyCount = squares.filter(sq => sq.innerHTML == 0).length;
+    const maxTile = getMaxTile();
 
     gameAnalyticsLog.push({
       direction: direction,
       score: score,
-      maxTile: getMaxTile(),
+      maxTile: maxTile,
       moveTime: moveTime,
       emptyTiles: emptyCount,
       timestamp: new Date().toISOString()
     });
-function getMaxTile() {
-  let max = 0;
-  for (let sq of squares) {
-    let val = parseInt(sq.innerHTML);
-    if (val > max) max = val;
-  }
-  return max;
-}
 
     // استدعاء النموذج الذكي
-    saveLatestMove(direction, score, getMaxTile(), moveTime, emptyCount);
+    saveLatestMove(direction, score, maxTile, moveTime, emptyCount);
+
+    // توصيات ذكية
+    const recentMoves = moveLog.slice(-3);
+    if (recentMoves.length === 3 && recentMoves.every(m => m === recentMoves[0])) {
+      showRecommendation("أنتِ تكررين نفس الاتجاه، جربي تغيير الاتجاه لتحسين النتيجة.");
+    }
+
+    if (score < 100 && moveCount > 30) {
+      showRecommendation("النقاط ما زالت منخفضة، حاولي التركيز على دمج البلاطات الكبيرة.");
+    }
+  }
+
+  function showRecommendation(message) {
+    const box = document.getElementById("recommendationBox");
+    box.innerText = `📌 توصية: ${message}`;
+    box.style.display = "block";
+    setTimeout(() => {
+      box.style.display = "none";
+    }, 4000);
   }
 
   function saveLatestMove(direction, score, maxTile, moveTime, emptyTiles) {
-  const latestMove = {
-    Score: score,
-    MaxTile: maxTile,
-    "MoveTime(ms)": moveTime,
-    EmptyTiles: emptyTiles
-  };
+    const latestMove = {
+      Score: score,
+      MaxTile: maxTile,
+      "MoveTime(ms)": moveTime,
+      EmptyTiles: emptyTiles
+    };
 
-  fetch('http://127.0.0.1:5000/predict', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(latestMove)
-  })
-  .then(res => res.json())
-  .then(data => {
-    // نحدد مستوى الخطر: إذا النموذج توقع خسارة = 100 (خطر عالي)، وإلا 20
-const riskLevel = data.prediction === 1 ? 90 : 20;
+    fetch('http://127.0.0.1:5000/predict', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(latestMove)
+    })
+    .then(res => res.json())
+    .then(data => {
+      const riskLevel = data.prediction === 1 ? 90 : 20;
+      drawDangerGauge(riskLevel);
 
-// نرسم العداد بناءً على مستوى الخطر
-drawDangerGauge(riskLevel);
+      if (data.prediction === 1) {
+        const warningBox = document.getElementById("warningBox");
+        warningBox.style.display = "block";
+        setTimeout(() => {
+          warningBox.style.display = "none";
+        }, 3000);
+      }
+    })
+    .catch(err => {
+      console.error("خطأ في الاتصال بالنموذج:", err);
+    });
+  }
 
-// نعرض تحذير فقط إذا كان عالي
-if (data.prediction === 1) {
-  const warningBox = document.getElementById("warningBox");
-  warningBox.style.display = "block";
-  setTimeout(() => {
-    warningBox.style.display = "none";
-  }, 3000);
-}
+  function drawDangerGauge(level) {
+    const ctx = document.getElementById("dangerGauge").getContext("2d");
 
-  })
-  .catch(err => {
-    console.error("خطأ في الاتصال بالنموذج:", err);
-  });
-}
+    if (dangerChart) dangerChart.destroy();
 
-function slide(row) {
-  let filtered = row.filter(val => val);
-  let missing = width - filtered.length;
-  let zeros = Array(missing).fill(0);
-  return filtered.concat(zeros);
-}
+    dangerChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["الخطر"],
+        datasets: [{
+          data: [level, 100 - level],
+          backgroundColor: level >= 70 ? ["#e74c3c", "#ddd"] :
+                          level >= 40 ? ["#f1c40f", "#ddd"] :
+                                        ["#2ecc71", "#ddd"],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        circumference: 180,
+        rotation: -90,
+        cutout: "70%",
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        }
+      }
+    });
+  }
+
+  function slide(row) {
+    let filtered = row.filter(val => val);
+    let missing = width - filtered.length;
+    let zeros = Array(missing).fill(0);
+    return filtered.concat(zeros);
+  }
 
   function slideReversed(row) {
     let filtered = row.filter(val => val);
@@ -176,6 +222,7 @@ function slide(row) {
       case 40: move("Down"); keyDown(); break;
     }
   }
+
   document.addEventListener("keyup", control);
 
   function keyLeft() {
@@ -226,41 +273,7 @@ function slide(row) {
       uniqueMoves: Object.keys(counts).length,
     };
     console.log("\nالإحصائيات:\n", summary);
-
     generateCSVAnalytics();
-
-    if (moveLog.length > 0) {
-      const ctx = document.getElementById("moveChart").getContext("2d");
-      new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: ["Left", "Right", "Up", "Down"],
-          datasets: [{
-            label: "عدد الحركات",
-            data: [
-              moveLog.filter(m => m === "Left").length,
-              moveLog.filter(m => m === "Right").length,
-              moveLog.filter(m => m === "Up").length,
-              moveLog.filter(m => m === "Down").length,
-            ],
-            backgroundColor: ["#f39c12", "#2980b9", "#27ae60", "#c0392b"]
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: "🎮 تحليل الحركات خلال الجلسة"
-            },
-            legend: { display: false }
-          },
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
-    }
   }
 
   function generateCSVAnalytics() {
@@ -299,41 +312,6 @@ const toggleSoundBtn = document.getElementById("toggleSound");
 const restartBtn = document.getElementById("restartBtn");
 
 let soundOn = false;
-let dangerChart; // متغير عالمي
-
-function drawDangerGauge(level) {
-  const ctx = document.getElementById("dangerGauge").getContext("2d");
-
-  if (dangerChart) {
-    dangerChart.destroy(); // نحذف القديم قبل نرسم جديد
-  }
-
-  const data = {
-    labels: ["الخطر"],
-    datasets: [{
-      data: [level, 100 - level],
-      backgroundColor: level >= 70 ? ["#e74c3c", "#ddd"] :
-                       level >= 40 ? ["#f1c40f", "#ddd"] :
-                                     ["#2ecc71", "#ddd"],
-      borderWidth: 0
-    }]
-  };
-
-  dangerChart = new Chart(ctx, {
-    type: "doughnut",
-    data: data,
-    options: {
-      circumference: 180,
-      rotation: -90,
-      cutout: "70%",
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false }
-      }
-    }
-  });
-}
-
 
 toggleSoundBtn.addEventListener("click", () => {
   soundOn = !soundOn;
