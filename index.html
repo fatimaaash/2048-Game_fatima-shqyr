@@ -7,17 +7,28 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
   <div class="container">
     <h1>لعبة 2048 👑</h1>
+    <div class="controls">
+      <button id="toggleSound">تشغيل الصوت 🔈</button>
+    </div>
     <div class="score-board">
       <span>النقاط: <span id="score">0</span></span>
       <span id="result"></span>
     </div>
     <div class="grid"></div>
     <canvas id="moveChart" width="400" height="200"></canvas>
+    <button id="restartBtn" style="display:none; margin-top:15px;">إعادة تشغيل اللعبة 🔄</button>
   </div>
+
+  <audio id="bgMusic" loop>
+    <source src="C:\Users\USER\Downloads\609440__andrecani__gaming-acoustic-music-by-andre.wav" type="audio/mpeg" />
+    <!-- ضع هنا مسار ملف صوت الخلفية -->
+  </audio>
 
   <script src="script.js"></script>
 </body>
+
 </html>
