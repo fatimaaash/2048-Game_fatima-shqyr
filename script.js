@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreDisplay = document.getElementById("score");
   const resultDisplay = document.getElementById("result");
   const width = 4;
+  let winCount = 0;
+  let lossCount = 0;
   let squares = [];
   let score = 0;
   let moveCount = 0;
@@ -242,41 +244,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function checkForWin() {
-    if (squares.some(sq => sq.innerHTML == 2048)) {
-      resultDisplay.innerHTML = "مبروووك يا fatima 🎉 وصلتِ لـ 2048! 👑";
-      document.removeEventListener("keyup", control);
-      showStats();
-      showRestartButton();
-      setTimeout(clear, 3000);
-    }
+  if (squares.some(sq => sq.innerHTML == 2048)) {
+    winCount++;
+    resultDisplay.innerHTML = "مبروووك يا fatima 🎉 وصلتِ لـ 2048! 👑";
+    document.removeEventListener("keyup", control);
+    showStats();
+    showRestartButton();
+    setTimeout(clear, 3000);
   }
+}
+
 
   function checkForGameOver() {
-    if (!squares.some(sq => sq.innerHTML == 0)) {
-      resultDisplay.innerHTML = "خلصت اللعبة يا fatima 😢 حاولي مرة تانية!";
-      document.removeEventListener("keyup", control);
-      showStats();
-      showRestartButton();
-      setTimeout(clear, 3000);
-    }
+  if (!squares.some(sq => sq.innerHTML == 0)) {
+    lossCount++;
+    resultDisplay.innerHTML = "خلصت اللعبة يا fatima 😢 حاولي مرة تانية!";
+    document.removeEventListener("keyup", control);
+    showStats();
+    showRestartButton();
+    setTimeout(clear, 3000);
   }
+}
+function showStats() {
+  console.log("عدد الحركات:", moveCount);
 
-  function showStats() {
-    console.log("عدد الحركات:", moveCount);
-    const counts = moveLog.reduce((acc, move) => {
-      acc[move] = (acc[move] || 0) + 1;
-      return acc;
-    }, {});
-    const summary = {
-      maxScore: score,
-      totalMoves: moveCount,
-      uniqueMoves: Object.keys(counts).length,
-    };
-    console.log("\nالإحصائيات:\n", summary);
-    generateCSVAnalytics();
+  const counts = moveLog.reduce((acc, move) => {
+    acc[move] = (acc[move] || 0) + 1;
+    return acc;
+  }, {});
 
+  const summary = {
+    maxScore: score,
+    totalMoves: moveCount,
+    uniqueMoves: Object.keys(counts).length,
+  };
 
-  // 🎯 الرسم البياني يظهر فقط إذا فيه تحركات
+  console.log("\nالإحصائيات:\n", summary);
+  generateCSVAnalytics();
+
+  // 🎯 رسم مخطط الحركات
   if (moveLog.length > 0) {
     const ctx = document.getElementById("moveChart").getContext("2d");
     new Chart(ctx, {
@@ -309,7 +315,114 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // 🟢 رسم مخطط الفوز والخسارة
+  const ctx2 = document.getElementById("winLossChart").getContext("2d");
+  new Chart(ctx2, {
+    type: "doughnut",
+    data: {
+      labels: ["فوز", "خسارة"],
+      datasets: [{
+        data: [winCount, lossCount],
+        backgroundColor: ["#2ecc71", "#e74c3c"]
+      }]
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "🎯 نسبة الفوز والخسارة"
+        },
+        legend: {
+          position: "bottom"
+        }
+      }
+    }
+  });
+
+  // ⏱️ تحليل الزمن بين الحركات
+  const moveTimes = gameAnalyticsLog.map(entry => entry.moveTime);
+  const moveLabels = moveTimes.map((_, i) => `حركة ${i + 1}`);
+
+  const ctx3 = document.getElementById("moveTimeChart").getContext("2d");
+  new Chart(ctx3, {
+    type: "line",
+    data: {
+      labels: moveLabels,
+      datasets: [{
+        label: "الزمن بين الحركات (ms)",
+        data: moveTimes,
+        borderColor: "#8e44ad",
+        backgroundColor: "rgba(142, 68, 173, 0.2)",
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "⏱️ تطور سرعة اللعب خلال الجلسة"
+        },
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "ms"
+          }
+        }
+      }
+    }
+  });
+
+  // 📈 تحليل أعلى بلاطة (Max Tile)
+  const maxTiles = gameAnalyticsLog.map(entry => entry.maxTile);
+  const maxTileLabels = maxTiles.map((_, i) => `حركة ${i + 1}`);
+
+  const ctx4 = document.getElementById("maxTileChart").getContext("2d");
+  new Chart(ctx4, {
+    type: "line",
+    data: {
+      labels: maxTileLabels,
+      datasets: [{
+        label: "أعلى بلاطة",
+        data: maxTiles,
+        borderColor: "#e67e22",
+        backgroundColor: "rgba(230, 126, 34, 0.2)",
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "📈 تطور أعلى بلاطة خلال الجلسة"
+        },
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "قيمة البلاطة"
+          }
+        }
+      }
+    }
+  });
 }
+
+
+
+  // 🎯 الرسم البياني يظهر فقط إذا فيه تحركات
+  
   function generateCSVAnalytics() {
     let csvContent = "Direction,Score,MaxTile,MoveTime(ms),EmptyTiles,Timestamp\n";
     gameAnalyticsLog.forEach(entry => {
