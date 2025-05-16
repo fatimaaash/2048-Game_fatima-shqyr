@@ -274,8 +274,42 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     console.log("\nالإحصائيات:\n", summary);
     generateCSVAnalytics();
-  }
 
+
+  // 🎯 الرسم البياني يظهر فقط إذا فيه تحركات
+  if (moveLog.length > 0) {
+    const ctx = document.getElementById("moveChart").getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Left", "Right", "Up", "Down"],
+        datasets: [{
+          label: "عدد الحركات",
+          data: [
+            moveLog.filter(m => m === "Left").length,
+            moveLog.filter(m => m === "Right").length,
+            moveLog.filter(m => m === "Up").length,
+            moveLog.filter(m => m === "Down").length,
+          ],
+          backgroundColor: ["#f39c12", "#2980b9", "#27ae60", "#c0392b"]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "🎮 تحليل الحركات خلال الجلسة"
+          },
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+}
   function generateCSVAnalytics() {
     let csvContent = "Direction,Score,MaxTile,MoveTime(ms),EmptyTiles,Timestamp\n";
     gameAnalyticsLog.forEach(entry => {
