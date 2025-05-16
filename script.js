@@ -1,5 +1,3 @@
-// script.js
-
 document.addEventListener("DOMContentLoaded", () => {
   const gridDisplay = document.querySelector(".grid");
   const scoreDisplay = document.getElementById("score");
@@ -9,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let score = 0;
   let moveCount = 0;
   let moveLog = [];
+  let gameAnalyticsLog = [];
+  let lastMoveTime = Date.now();
 
   function createBoard() {
     for (let i = 0; i < width * width; i++) {
@@ -30,8 +30,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function move(direction) {
-    moveCount++;
-    moveLog.push(direction);
+  moveCount++;
+  moveLog.push(direction);
+
+  const now = Date.now();
+  const moveTime = now - lastMoveTime;
+  lastMoveTime = now;
+
+  const emptyCount = squares.filter(sq => sq.innerHTML == 0).length;
+
+  gameAnalyticsLog.push({
+    direction: direction,
+    score: score,
+    maxTile: getMaxTile(),
+    moveTime: moveTime,
+    emptyTiles: emptyCount, // ✨ الإضافة الجديدة
+    timestamp: new Date().toISOString()
+  });
+}
+
+  function getMaxTile() {
+    let max = 0;
+    for (let sq of squares) {
+      let val = parseInt(sq.innerHTML);
+      if (val > max) max = val;
+    }
+    return max;
   }
 
   function slide(row) {
@@ -106,14 +130,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function control(e) {
     switch (e.keyCode) {
-      case 37:
-        move("Left"); keyLeft(); break;
-      case 38:
-        move("Up"); keyUp(); break;
-      case 39:
-        move("Right"); keyRight(); break;
-      case 40:
-        move("Down"); keyDown(); break;
+      case 37: move("Left"); keyLeft(); break;
+      case 38: move("Up"); keyUp(); break;
+      case 39: move("Right"); keyRight(); break;
+      case 40: move("Down"); keyDown(); break;
     }
   }
   document.addEventListener("keyup", control);
@@ -139,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resultDisplay.innerHTML = "مبروووك يا fatima 🎉 وصلتِ لـ 2048! 👑";
       document.removeEventListener("keyup", control);
       showStats();
+      showRestartButton();
       setTimeout(clear, 3000);
     }
   }
@@ -148,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resultDisplay.innerHTML = "خلصت اللعبة يا fatima 😢 حاولي مرة تانية!";
       document.removeEventListener("keyup", control);
       showStats();
+      showRestartButton();
       setTimeout(clear, 3000);
     }
   }
@@ -158,7 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
       acc[move] = (acc[move] || 0) + 1;
       return acc;
     }, {});
-
     const summary = {
       maxScore: score,
       totalMoves: moveCount,
@@ -166,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     console.log("\nالإحصائيات:\n", summary);
 
-    downloadCSV();
+    generateCSVAnalytics();
 
     if (moveLog.length > 0) {
       const ctx = document.getElementById("moveChart").getContext("2d");
@@ -202,11 +223,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function downloadCSV() {
-    const csv = ["Move,Index", ...moveLog.map((move, i) => `${move},${i + 1}`)].join("\n");
+  function generateCSVAnalytics() {
+    let csvContent = "Direction,Score,MaxTile,MoveTime(ms),EmptyTiles,Timestamp\n";
+gameAnalyticsLog.forEach(entry => {
+  csvContent += `${entry.direction},${entry.score},${entry.maxTile},${entry.moveTime},${entry.emptyTiles},${entry.timestamp}\n`;
+});
+
     const link = document.createElement("a");
-    link.href = `data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`;
-    link.download = "game_data.csv";
+    link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+    link.download = "full_game_data.csv";
     document.body.appendChild(link);
     link.click();
   }
@@ -228,6 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   createBoard();
 });
+
 const bgMusic = document.getElementById("bgMusic");
 const toggleSoundBtn = document.getElementById("toggleSound");
 const restartBtn = document.getElementById("restartBtn");
@@ -245,17 +271,10 @@ toggleSoundBtn.addEventListener("click", () => {
   }
 });
 
-// إظهار زر إعادة التشغيل لما تنتهي اللعبة
 function showRestartButton() {
   restartBtn.style.display = "inline-block";
 }
 
-// إعادة تعيين اللعبة
 restartBtn.addEventListener("click", () => {
-  // إعادة تحميل الصفحة أو إعادة تهيئة اللعبة
   location.reload();
 });
-
-// في checkForWin() و checkForGameOver() أضف هذا السطر قبل setTimeout(clear, 3000);
-
-showRestartButton();
