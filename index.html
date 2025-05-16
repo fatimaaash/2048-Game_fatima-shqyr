@@ -9,68 +9,79 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-</head>
-
-<div id="warningBox" style="display:none;">⚠️ انتبه! يبدو أنك قريب من الخسارة!</div>
-
-
 <body>
-
-  <!-- توصية ذكية -->
-  <div id="recommendationBox" style="display:none; position: fixed; bottom: 200px; right: 40px; background: #fff8dc; border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(255, 193, 7, 0.8); font-weight: bold;">
-    📌 توصية:
-  </div>
-
   <div class="container">
+
+    <!-- عنوان -->
     <h1>لعبة 2048 👑</h1>
-    <div class="controls">
+
+    <!-- معلومات اللعبة -->
+    <div class="game-info">
+      <div class="score-board">
+        <span>النقاط: <span id="score">0</span></span>
+        <span id="result"></span>
+      </div>
       <button id="toggleSound">تشغيل الصوت 🔈</button>
+      <button id="restartBtn" style="display:none;">إعادة تشغيل اللعبة 🔄</button>
     </div>
-    <div class="score-board">
-      <span>النقاط: <span id="score">0</span></span>
-      <span id="result"></span>
+
+    <!-- ✅ توصية وتحذير ومؤشر داخل اللعبة -->
+    <div class="alert-container">
+      <div id="recommendationBox" class="alert-box" style="display: none;">
+        📌 توصية:
+      </div>
+      <div id="warningBox" class="alert-box warning" style="display: none;">
+        ⚠️ انتبه! يبدو أنك قريب من الخسارة!
+      </div>
+      <div class="gauge-box">
+        <h4 style="margin: 0;">⚠️ مؤشر الخطر</h4>
+        <canvas id="dangerGauge" width="120" height="80"></canvas>
+      </div>
     </div>
-    <div class="grid"></div>
-    <button id="restartBtn" style="display:none; margin-top:15px;">إعادة تشغيل اللعبة 🔄</button>
+
+    <!-- شبكة اللعبة -->
+    <div class="game-area">
+      <div class="grid"></div>
+    </div>
+
+    <!-- 🎯 لوحة تحكم التحليلات -->
+    <section class="dashboard">
+      <h2>لوحة تحكم تحليلات اللاعب 🎮</h2>
+      <div class="charts">
+
+        <!-- مخطط الزمن بين الحركات -->
+        <div>
+          <h4 style="text-align:center;">⏱️ تحليل الزمن بين الحركات</h4>
+          <canvas id="moveTimeChart" width="400" height="300"></canvas>
+        </div>
+
+        <!-- مخطط أعلى بلاطة -->
+        <div>
+          <h4 style="text-align:center;">📈 أعلى بلاطة وصلت لها خلال الجلسة</h4>
+          <canvas id="maxTileChart" width="400" height="300"></canvas>
+        </div>
+
+        <!-- مخطط اتجاهات الحركة -->
+        <div>
+          <h4 style="text-align:center;">تحليل اتجاهات الحركة</h4>
+          <canvas id="moveChart" width="400" height="300"></canvas>
+        </div>
+
+        <!-- مخطط الفوز والخسارة -->
+        <div>
+          <h4 style="text-align:center;">نسبة الفوز والخسارة</h4>
+          <canvas id="winLossChart" width="400" height="300"></canvas>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <!-- 🎯 لوحة التحكم -->
-  <h2 style="text-align:center; margin-top: 40px;">لوحة تحكم تحليلات اللاعب 🎮</h2>
-
-  <div id="dashboard" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-top: 20px;">
-    <!-- رسم تحليل الحركات -->
-     <div>
-  <h4 style="text-align:center;">⏱️ تحليل الزمن بين الحركات</h4>
-  <canvas id="moveTimeChart" width="400" height="300"></canvas>
-</div>
-<div>
-  <h4 style="text-align:center;">📈 أعلى بلاطة وصلت لها خلال الجلسة</h4>
-  <canvas id="maxTileChart" width="400" height="300"></canvas>
-</div>
-
-
-    <div>
-      <h4 style="text-align:center;">تحليل اتجاهات الحركة</h4>
-      <canvas id="moveChart" width="400" height="300"></canvas>
-    </div>
-
-    <!-- رسم نسبة الفوز والخسارة -->
-    <div>
-      <h4 style="text-align:center;">نسبة الفوز والخسارة</h4>
-      <canvas id="winLossChart" width="400" height="300"></canvas>
-    </div>
-  </div>
-
-  <!-- صوت خلفية -->
+  <!-- مشغّل الصوت -->
   <audio id="bgMusic" loop>
-    <source src="C:\Users\USER\Desktop\21-2048-Game\609440__andrecani__gaming-acoustic-music-by-andre.wav" type="audio/mpeg" />
+    <source src="609440__andrecani__gaming-acoustic-music-by-andre.wav" type="audio/wav" />
   </audio>
-
-  <!-- مؤشر الخطر -->
-  <div style="position: fixed; bottom: 10px; right: 300px; background: #ffffff; border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.966);">
-    <h4 style="margin: 0;">⚠️ مؤشر الخطر</h4>
-    <canvas id="dangerGauge" width="120" height="80"></canvas>
-  </div>
 
   <script src="script.js"></script>
 </body>
+
+</html>
