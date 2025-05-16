@@ -9,10 +9,18 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
+</head>
+
 <div id="warningBox" style="display:none;">⚠️ انتبه! يبدو أنك قريب من الخسارة!</div>
 
 
 <body>
+
+  <!-- توصية ذكية -->
+  <div id="recommendationBox" style="display:none; position: fixed; bottom: 100px; right: 300px; background: #fff8dc; border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(255, 193, 7, 0.8); font-weight: bold;">
+    📌 توصية:
+  </div>
+
   <div class="container">
     <h1>لعبة 2048 👑</h1>
     <div class="controls">
@@ -25,21 +33,19 @@
     <div class="grid"></div>
     <canvas id="moveChart" width="400" height="200"></canvas>
     <button id="restartBtn" style="display:none; margin-top:15px;">إعادة تشغيل اللعبة 🔄</button>
-
   </div>
 
   <audio id="bgMusic" loop>
-    <source src="C:\Users\USER\Downloads\609440__andrecani__gaming-acoustic-music-by-andre.wav" type="audio/mpeg" />
-    <!-- ضع هنا مسار ملف صوت الخلفية -->
+    <source src="C:\Users\USER\Desktop\21-2048-Game\609440__andrecani__gaming-acoustic-music-by-andre.wav" type="audio/mpeg" />
   </audio>
 
+  <!-- مؤشر الخطر -->
+  <div style="position: fixed; bottom: 10px; right: 300px; background: #ffffff; border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.966);">
+    <h4 style="margin: 0;">⚠️ مؤشر الخطر</h4>
+    <canvas id="dangerGauge" width="120" height="80"></canvas>
+  </div>
+
   <script src="script.js"></script>
-  <div style="position: fixed; bottom: 10px; right: 300px; background: rgb(255, 255, 255); border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.966);">
-  <h4 style="margin: 0;">⚠️ مؤشر الخطر</h4>
-  <canvas id="dangerGauge" width="120" height="80"></canvas>
-</div>
-
-
 </body>
 
 </html>
