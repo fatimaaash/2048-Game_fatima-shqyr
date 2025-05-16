@@ -47,52 +47,55 @@ document.addEventListener("DOMContentLoaded", () => {
       emptyTiles: emptyCount,
       timestamp: new Date().toISOString()
     });
+function getMaxTile() {
+  let max = 0;
+  for (let sq of squares) {
+    let val = parseInt(sq.innerHTML);
+    if (val > max) max = val;
+  }
+  return max;
+}
 
     // استدعاء النموذج الذكي
     saveLatestMove(direction, score, getMaxTile(), moveTime, emptyCount);
   }
 
-  function getMaxTile() {
-    let max = 0;
-    for (let sq of squares) {
-      let val = parseInt(sq.innerHTML);
-      if (val > max) max = val;
-    }
-    return max;
-  }
-
   function saveLatestMove(direction, score, maxTile, moveTime, emptyTiles) {
-    const latestMove = {
-      Score: score,
-      MaxTile: maxTile,
-      "MoveTime(ms)": moveTime,
-      EmptyTiles: emptyTiles
-    };
+  const latestMove = {
+    Score: score,
+    MaxTile: maxTile,
+    "MoveTime(ms)": moveTime,
+    EmptyTiles: emptyTiles
+  };
 
-    fetch('http://127.0.0.1:5000/predict', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(latestMove)
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.prediction === 1) {
-        alert("⚠️ انتبه! يبدو أنك قريب من الخسارة!");
-      }
-    })
-    .catch(err => {
-      console.error("خطأ في الاتصال بالنموذج:", err);
-    });
-  }
+  fetch('http://127.0.0.1:5000/predict', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(latestMove)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.prediction === 1) {
+      const warningBox = document.getElementById("warningBox");
+      warningBox.style.display = "block";
+      setTimeout(() => {
+        warningBox.style.display = "none";
+      }, 3000);
+    }
+  })
+  .catch(err => {
+    console.error("خطأ في الاتصال بالنموذج:", err);
+  });
+}
 
-  function slide(row) {
-    let filtered = row.filter(val => val);
-    let missing = width - filtered.length;
-    let zeros = Array(missing).fill(0);
-    return filtered.concat(zeros);
-  }
+function slide(row) {
+  let filtered = row.filter(val => val);
+  let missing = width - filtered.length;
+  let zeros = Array(missing).fill(0);
+  return filtered.concat(zeros);
+}
 
   function slideReversed(row) {
     let filtered = row.filter(val => val);
