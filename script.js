@@ -30,24 +30,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function move(direction) {
-  moveCount++;
-  moveLog.push(direction);
+    moveCount++;
+    moveLog.push(direction);
 
-  const now = Date.now();
-  const moveTime = now - lastMoveTime;
-  lastMoveTime = now;
+    const now = Date.now();
+    const moveTime = now - lastMoveTime;
+    lastMoveTime = now;
 
-  const emptyCount = squares.filter(sq => sq.innerHTML == 0).length;
+    const emptyCount = squares.filter(sq => sq.innerHTML == 0).length;
 
-  gameAnalyticsLog.push({
-    direction: direction,
-    score: score,
-    maxTile: getMaxTile(),
-    moveTime: moveTime,
-    emptyTiles: emptyCount, // ✨ الإضافة الجديدة
-    timestamp: new Date().toISOString()
-  });
-}
+    gameAnalyticsLog.push({
+      direction: direction,
+      score: score,
+      maxTile: getMaxTile(),
+      moveTime: moveTime,
+      emptyTiles: emptyCount,
+      timestamp: new Date().toISOString()
+    });
+
+    // استدعاء النموذج الذكي
+    saveLatestMove(direction, score, getMaxTile(), moveTime, emptyCount);
+  }
 
   function getMaxTile() {
     let max = 0;
@@ -56,6 +59,32 @@ document.addEventListener("DOMContentLoaded", () => {
       if (val > max) max = val;
     }
     return max;
+  }
+
+  function saveLatestMove(direction, score, maxTile, moveTime, emptyTiles) {
+    const latestMove = {
+      Score: score,
+      MaxTile: maxTile,
+      "MoveTime(ms)": moveTime,
+      EmptyTiles: emptyTiles
+    };
+
+    fetch('http://127.0.0.1:5000/predict', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(latestMove)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.prediction === 1) {
+        alert("⚠️ انتبه! يبدو أنك قريب من الخسارة!");
+      }
+    })
+    .catch(err => {
+      console.error("خطأ في الاتصال بالنموذج:", err);
+    });
   }
 
   function slide(row) {
@@ -225,9 +254,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function generateCSVAnalytics() {
     let csvContent = "Direction,Score,MaxTile,MoveTime(ms),EmptyTiles,Timestamp\n";
-gameAnalyticsLog.forEach(entry => {
-  csvContent += `${entry.direction},${entry.score},${entry.maxTile},${entry.moveTime},${entry.emptyTiles},${entry.timestamp}\n`;
-});
+    gameAnalyticsLog.forEach(entry => {
+      csvContent += `${entry.direction},${entry.score},${entry.maxTile},${entry.moveTime},${entry.emptyTiles},${entry.timestamp}\n`;
+    });
 
     const link = document.createElement("a");
     link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
