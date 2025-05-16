@@ -8,7 +8,9 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <div id="warningBox" style="display:none;">⚠️ انتبه! يبدو أنك قريب من الخسارة!</div>
+
 
 <body>
   <div class="container">
@@ -23,6 +25,7 @@
     <div class="grid"></div>
     <canvas id="moveChart" width="400" height="200"></canvas>
     <button id="restartBtn" style="display:none; margin-top:15px;">إعادة تشغيل اللعبة 🔄</button>
+
   </div>
 
   <audio id="bgMusic" loop>
@@ -31,6 +34,12 @@
   </audio>
 
   <script src="script.js"></script>
+  <div style="position: fixed; bottom: 10px; right: 300px; background: rgb(255, 255, 255); border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.966);">
+  <h4 style="margin: 0;">⚠️ مؤشر الخطر</h4>
+  <canvas id="dangerGauge" width="120" height="80"></canvas>
+</div>
+
+
 </body>
 
 </html>
