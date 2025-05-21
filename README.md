@@ -18,7 +18,7 @@
 
 1. استنساخ المشروع:
    ```bash
-  https://github.com/fatimaaash/2048-Game_fatima-shqyr/tree/main
+ https://github.com/fatimaaash/2048-Game_fatima-shqyr/tree/main
 ````
 
 2. تثبيت المتطلبات:
