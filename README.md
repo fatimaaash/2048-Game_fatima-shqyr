@@ -18,8 +18,7 @@
 
 1. استنساخ المشروع:
    ```bash
-   git clone https://github.com/fatimaaash/2048-Game_fatima-shqyr.git
-   cd 2048-Game_fatima-shqyr
+  https://github.com/fatimaaash/2048-Game_fatima-shqyr/tree/main
 ````
 
 2. تثبيت المتطلبات:
