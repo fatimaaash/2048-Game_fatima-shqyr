@@ -229,18 +229,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function keyLeft() {
     moveLeft(); combineRow(); moveLeft(); generate();
+     checkForWin();
   }
 
   function keyRight() {
     moveRight(); combineRow(); moveRight(); generate();
   }
+   checkForWin();
 
   function keyUp() {
     moveUp(); combineColumn(); moveUp(); generate();
+     checkForWin();
   }
 
   function keyDown() {
     moveDown(); combineColumn(); moveDown(); generate();
+     checkForWin();
   }
 
   function checkForWin() {
