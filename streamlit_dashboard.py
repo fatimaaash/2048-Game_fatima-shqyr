@@ -44,13 +44,6 @@ fig_move_dir = px.bar(move_counts, x='Direction', y='Count', title='تحليل �
 st.plotly_chart(fig_move_dir, use_container_width=True)
 
 # نسبة الفوز والخسارة (إذا كان لديك عمود 'Win' في البيانات)
-if 'Win' in df.columns:
-    win_loss_counts = df['Win'].value_counts().reset_index()
-    win_loss_counts.columns = ['Outcome', 'Count']
-    fig_win_loss = px.pie(win_loss_counts, values='Count', names='Outcome', title='نسبة الفوز والخسارة')
-    st.plotly_chart(fig_win_loss, use_container_width=True)
-else:
-    st.info("لا توجد بيانات للفوز والخسارة في ملف البيانات.")
 
 # قسم التنبؤ بالخطر
 st.header("تنبؤ الخطر")
