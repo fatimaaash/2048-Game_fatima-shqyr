@@ -55,12 +55,12 @@ else:
 # قسم التنبؤ بالخطر
 st.header("تنبؤ الخطر")
 
-# يمكنك تعديل أسماء الميزات لتطابق المتغيرات المطلوبة من النموذج
-feature1 = st.number_input("Feature 1 (مثلاً: النقاط)", min_value=0)
-feature2 = st.number_input("Feature 2 (مثلاً: أعلى بلاطة)", min_value=0)
+# هنا تعديل أسماء الميزات لتطابق أسماء الأعمدة الفعلية في بياناتك
+score = st.number_input("Score (النقاط)", min_value=0)
+max_tile = st.number_input("MaxTile (أعلى بلاطة)", min_value=0)
 
 if st.button("تنبؤ"):
-    input_data = {'feature1': feature1, 'feature2': feature2}
+    input_data = {'Score': score, 'MaxTile': max_tile}
     input_df = pd.DataFrame([input_data])
     try:
         prediction = model.predict(input_df)[0]
