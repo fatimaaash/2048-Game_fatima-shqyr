@@ -53,17 +53,24 @@ else:
     st.info("لا توجد بيانات للفوز والخسارة في ملف البيانات.")
 
 # قسم التنبؤ بالخطر
-st.header("تنبؤ الخطر")
+st.header("🧠 تنبؤ الخطر باستخدام النموذج الذكي")
 
-# الميزات الفعلية التي يستخدمها النموذج
+# إدخال ميزات النموذج المدرب
+score = st.number_input("Score (النقاط)", min_value=0)
+max_tile = st.number_input("MaxTile (أعلى بلاطة)", min_value=0)
 empty_tiles = st.number_input("EmptyTiles (عدد البلاطات الفارغة)", min_value=0)
 move_time = st.number_input("MoveTime(ms) (زمن الحركة بالميلي ثانية)", min_value=0)
 
 if st.button("تنبؤ"):
-    input_data = {'EmptyTiles': empty_tiles, 'MoveTime(ms)': move_time}
+    input_data = {
+        'Score': score,
+        'MaxTile': max_tile,
+        'EmptyTiles': empty_tiles,
+        'MoveTime(ms)': move_time
+    }
     input_df = pd.DataFrame([input_data])
     try:
         prediction = model.predict(input_df)[0]
-        st.write(f"🧠 التنبؤ: {'⚠️ خطر' if prediction == 1 else '✅ لا خطر'}")
+        st.success(f"✅ التنبؤ: {'⚠️ خطر' if prediction == 1 else '🟢 لا خطر'}")
     except Exception as e:
         st.error(f"❌ خطأ في التنبؤ: {e}")
