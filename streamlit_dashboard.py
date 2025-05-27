@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 import plotly.express as px
 
-# تحميل البيانات
+# تحميل البيانات من ملف CSV
 @st.cache_data
 def load_data():
     df = pd.read_csv("full_game_data.csv")
@@ -12,7 +12,7 @@ def load_data():
 
 df = load_data()
 
-# تحميل النموذج
+# تحميل نموذج ML المدرب
 @st.cache_resource
 def load_model():
     return joblib.load("near_loss_model.pkl")
@@ -22,16 +22,18 @@ model = load_model()
 # عنوان الصفحة
 st.title("لوحة تحكم وتحليل لعبة 2048 👑")
 
-# عرض البيانات
+# عرض أول بيانات للتأكد
 st.subheader("معاينة بيانات الحركات")
 st.write(df.head())
+
+# عرض عدد الحركات المسجلة
 st.write(f"عدد الحركات المسجلة: {len(df)}")
 
-# رسم الزمن بين الحركات
+# الرسم البياني: الزمن بين الحركات
 fig_time = px.line(df, x='move_number', y='MoveTime(ms)', title='⏱️ الزمن بين الحركات')
 st.plotly_chart(fig_time, use_container_width=True)
 
-# رسم أعلى بلاطة
+# الرسم البياني: أعلى بلاطة وصلت لها
 fig_max_tile = px.histogram(df, x='MaxTile', nbins=10, title='📈 أعلى بلاطة وصلت لها')
 st.plotly_chart(fig_max_tile, use_container_width=True)
 
@@ -41,7 +43,7 @@ move_counts.columns = ['Direction', 'Count']
 fig_move_dir = px.bar(move_counts, x='Direction', y='Count', title='تحليل اتجاهات الحركة')
 st.plotly_chart(fig_move_dir, use_container_width=True)
 
-# رسم نسبة الفوز والخسارة إن وُجدت
+# نسبة الفوز والخسارة (إذا كان لديك عمود 'Win' في البيانات)
 if 'Win' in df.columns:
     win_loss_counts = df['Win'].value_counts().reset_index()
     win_loss_counts.columns = ['Outcome', 'Count']
@@ -51,20 +53,24 @@ else:
     st.info("لا توجد بيانات للفوز والخسارة في ملف البيانات.")
 
 # قسم التنبؤ بالخطر
-st.header("🧠 تنبؤ الخطر باستخدام النموذج الذكي")
+st.header("تنبؤ الخطر")
 
-# إدخالات المستخدم: بنفس ترتيب التدريب
+# إدخال المستخدم للميزات المطلوبة بالتسلسل الصحيح
 score = st.number_input("Score (النقاط)", min_value=0)
 max_tile = st.number_input("MaxTile (أعلى بلاطة)", min_value=0)
-empty_tiles = st.number_input("EmptyTiles (عدد البلاطات الفارغة)", min_value=0)
-move_time = st.number_input("MoveTime(ms) (زمن الحركة بالميلي ثانية)", min_value=0)
+move_time = st.number_input("MoveTime(ms) (الزمن بين الحركات)", min_value=0)
+empty_tiles = st.number_input("EmptyTiles (عدد الخانات الفارغة)", min_value=0)
 
 if st.button("تنبؤ"):
-    # ترتيب الأعمدة مهم جداً!
-    input_df = pd.DataFrame([[score, max_tile, empty_tiles, move_time]],
-                            columns=['Score', 'MaxTile', 'EmptyTiles', 'MoveTime(ms)'])
+    input_data = pd.DataFrame([{
+        'Score': score,
+        'MaxTile': max_tile,
+        'MoveTime(ms)': move_time,
+        'EmptyTiles': empty_tiles
+    }])
+
     try:
-        prediction = model.predict(input_df)[0]
-        st.success(f"✅ التنبؤ: {'⚠️ خطر' if prediction == 1 else '🟢 لا خطر'}")
+        prediction = model.predict(input_data)[0]
+        st.success(f"✅ التنبؤ: {'⚠️ خطر وشيك' if prediction == 1 else 'آمن ✅'}")
     except Exception as e:
         st.error(f"❌ خطأ في التنبؤ: {e}")
